@@ -69,7 +69,9 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
   }
 
   const isCompanyAdmin = userData?.user?.role === 'company_admin';
+  const isSchoolAdmin = userData?.user?.role === 'school_admin';
   const isJobOwner = isCompanyAdmin && job.companyId === userData?.company?.id;
+  const isRegularUser = userData?.user?.role === 'user';
 
   return (
     <div className="job-details container mt-4">
@@ -123,11 +125,11 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
                   Edit Job
                 </Link>
               </div>
-            ) : (
+            ) : isRegularUser ? (
               <Button variant="primary" onClick={onApply}>
                 Apply Now
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

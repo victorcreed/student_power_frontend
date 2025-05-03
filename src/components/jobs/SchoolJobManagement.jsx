@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { jobService } from '../../services/jobService';
 import Button from '../common/Button';
 import Pagination from '../common/Pagination';
-import JobApproval from './JobApproval';
-import JobDetail from './JobDetail';
 
 const SchoolJobManagement = () => {
-  const [view, setView] = useState('list');
-  const [selectedJobId, setSelectedJobId] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,6 +13,7 @@ const SchoolJobManagement = () => {
     totalPages: 1,
     totalItems: 0
   });
+  const navigate = useNavigate();
 
   const fetchJobs = async (page = 1) => {
     try {
@@ -25,10 +23,10 @@ const SchoolJobManagement = () => {
       const response = await jobService.getJobs({ 
         page,
         limit: 10,
-        status: 'active' // Only fetch active jobs for school admins
+        status: 'active'
       });
       
-      setJobs(response.data.jobs || []);
+      setJobs(response.data || []);
       setPagination({
         currentPage: response.data.pagination?.currentPage || 1,
         totalPages: response.data.pagination?.totalPages || 1,
@@ -43,23 +41,15 @@ const SchoolJobManagement = () => {
   };
 
   useEffect(() => {
-    if (view === 'list') {
-      fetchJobs(1);
-    }
-  }, [view]);
+    fetchJobs(1);
+  }, []);
   
   const handlePageChange = (page) => {
     fetchJobs(page);
   };
   
   const handleViewJob = (id) => {
-    setSelectedJobId(id);
-    setView('detail');
-  };
-  
-  const handleBack = () => {
-    setView('list');
-    setSelectedJobId(null);
+    navigate(`/jobs/${id}`);
   };
   
   const getStatusBadgeClass = (status) => {
@@ -71,40 +61,6 @@ const SchoolJobManagement = () => {
       default: return 'bg-primary';
     }
   };
-
-  const handleApprove = async (jobId) => {
-    try {
-      setIsLoading(true);
-      await jobService.approveJob(jobId);
-      
-      // Update the job in the list
-      setJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.id === jobId ? { ...job, schoolApproval: true } : job
-        )
-      );
-      
-    } catch (err) {
-      setError('Failed to approve job. Please try again.');
-      console.error('Error approving job:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  if (view === 'approvals') {
-    return <JobApproval onBack={handleBack} />;
-  }
-  
-  if (view === 'detail' && selectedJobId) {
-    return (
-      <JobDetail 
-        jobId={selectedJobId} 
-        onBack={handleBack}
-        readOnly={true}
-      />
-    );
-  }
   
   return (
     <div className="job-management">
@@ -155,24 +111,6 @@ const SchoolJobManagement = () => {
                         >
                           View
                         </Button>
-                        {!job.schoolApproval ? (
-                          <Button 
-                            variant="success" 
-                            size="sm"
-                            onClick={() => handleApprove(job.id)}
-                            disabled={isLoading}
-                          >
-                            Approve
-                          </Button>
-                        ) : (
-                          <Button 
-                            variant="outline-success" 
-                            size="sm"
-                            disabled
-                          >
-                            Approved
-                          </Button>
-                        )}
                       </div>
                     </td>
                   </tr>
