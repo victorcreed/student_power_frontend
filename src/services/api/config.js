@@ -22,7 +22,8 @@ export const API_ENDPOINTS = {
     SCHOOL_APPROVED_JOBS: '/schools/approved-jobs',
     APPLY: (jobId) => `/jobs/${jobId}/apply`,
     APPLICATIONS: (jobId) => `/jobs/${jobId}/applications`,
-    USER_APPLICATIONS: '/users/applications'
+    USER_APPLICATIONS: '/users/applications',
+    PUBLIC: '/jobs/public'
   }
 };
 
