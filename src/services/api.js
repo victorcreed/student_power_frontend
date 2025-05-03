@@ -4,29 +4,27 @@ import { API_ENDPOINTS } from './api/config';
 const getAuthToken = () => localStorage.getItem('auth_token');
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-api.interceptors.request.use(config => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 api.interceptors.response.use(
-  response => response,
-  async error => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_type');
-      localStorage.removeItem('user_data');
-      window.location.href = '/signin';
-    }
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response || error);
     return Promise.reject(error);
   }
 );

@@ -1,48 +1,38 @@
 import api from './api';
-import { API_ENDPOINTS } from './api/config';
 
 export const jobService = {
-  getJobs: ({ page = 1, limit = 10, status, schoolId }) => {
-    const params = new URLSearchParams();
-    params.append('page', page);
-    params.append('limit', limit);
-    
-    if (status) params.append('status', status);
-    if (schoolId) params.append('schoolId', schoolId);
-    
-    return api.get(`${API_ENDPOINTS.JOBS.LIST}?${params.toString()}`);
+  getJobs: async (params = {}) => {
+    try {
+      const response = await api.get('/jobs', { params });
+      console.log('API Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      throw error;
+    }
   },
   
-  getJob: (id) => api.get(API_ENDPOINTS.JOBS.DETAILS(id)),
-  
-  createJob: (jobData) => api.post(API_ENDPOINTS.JOBS.CREATE, jobData),
-  
-  updateJob: (id, jobData) => api.put(API_ENDPOINTS.JOBS.UPDATE(id), jobData),
-  
-  deleteJob: (id) => api.delete(API_ENDPOINTS.JOBS.DELETE(id)),
-  
-  applyToJob: (jobId, data) => api.post(`/jobs/${jobId}/apply`, data),
-  
-  getStudentApplications: (page = 1, limit = 10) => {
-    const params = new URLSearchParams();
-    params.append('page', page);
-    params.append('limit', limit);
-    return api.get(`/applications?${params.toString()}`);
+  getJob: (id) => {
+    return api.get(`/jobs/${id}`);
   },
   
-  getJobApplications: (jobId, page = 1, limit = 10) => {
-    const params = new URLSearchParams();
-    params.append('page', page);
-    params.append('limit', limit);
-    return api.get(`/jobs/${jobId}/applications?${params.toString()}`);
+  createJob: (jobData) => {
+    return api.post('/jobs', jobData);
   },
   
-  getAccessibleJobApplications: (jobId, page = 1, limit = 10) => {
-    const params = new URLSearchParams();
-    params.append('page', page);
-    params.append('limit', limit);
-    return api.get(`/jobs/${jobId}/applicants?${params.toString()}`);
+  updateJob: (id, jobData) => {
+    return api.put(`/jobs/${id}`, jobData);
   },
   
-  approveJob: (jobId) => api.post(`/jobs/${jobId}/approve`),
+  deleteJob: (id) => {
+    return api.delete(`/jobs/${id}`);
+  },
+  
+  applyForJob: (jobId, applicationData) => {
+    return api.post(`/jobs/${jobId}/applications`, applicationData);
+  },
+  
+  approveJob: (jobId) => {
+    return api.patch(`/jobs/${jobId}/approve`);
+  }
 };
