@@ -1,160 +1,140 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchJobById, clearSelectedJob } from '../store/slices/jobsSlice';
+import { jobService } from '../services/jobService';
+import Button from '../components/common/Button';
+import { useSelector } from 'react-redux';
 
-const JobNotFound = () => (
-  <div className="card bg-warning-subtle border-warning">
-    <div className="card-body text-center py-5">
-      <h2 className="card-title">Job Not Found</h2>
-      <p className="card-text mb-4">
-        The job listing you're looking for doesn't exist or has been removed.
-      </p>
-      <Link to="/jobs/public" className="btn btn-primary">
-        Browse All Jobs
-      </Link>
-    </div>
-  </div>
-);
+const withJobData = Component => {
+  return props => {
+    const { id } = useParams();
+    const [job, setJob] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const { isAuthenticated, userData } = useSelector(state => state.auth);
 
-const JobDetails = () => {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  
-  const { selectedJob, jobStatus, jobError } = useSelector(state => state.jobs || {});
-  const job = selectedJob?.data;
-  const isLoading = jobStatus === 'loading';
-  
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchJobById(id));
-    }
-    
-    return () => {
-      dispatch(clearSelectedJob());
+    useEffect(() => {
+      const fetchJob = async () => {
+        try {
+          setLoading(true);
+          const response = await jobService.getJobById(id);
+          if (response && response.data) {
+            setJob(response.data);
+          } else {
+            throw new Error('Job not found');
+          }
+        } catch (err) {
+          setError('Failed to load job details. Please try again.');
+          console.error('Error fetching job:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchJob();
+    }, [id]);
+
+    const handleApply = () => {
+      if (!isAuthenticated) {
+        navigate('/signin?redirect=' + encodeURIComponent(`/jobs/${id}`));
+        return;
+      }
+      
+      navigate(`/dashboard/applications/apply/${id}`);
     };
-  }, [dispatch, id]);
-  
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric', month: 'long', day: 'numeric'
-    });
+
+    return <Component 
+      {...props}
+      job={job}
+      loading={loading}
+      error={error}
+      onApply={handleApply}
+      isAuthenticated={isAuthenticated}
+      userData={userData}
+    />;
   };
+};
 
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center py-5">
-        <div className="spinner-border text-primary me-3" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <span>Loading job details...</span>
-      </div>
-    );
+const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, userData }) => {
+  if (loading) {
+    return <div className="text-center py-4">Loading job details...</div>;
   }
 
-  if (jobError || !job) {
-    return <JobNotFound />;
+  if (error) {
+    return <div className="alert alert-danger">{error}</div>;
   }
+
+  if (!job) {
+    return <div className="alert alert-warning">Job not found</div>;
+  }
+
+  const isCompanyAdmin = userData?.user?.role === 'company_admin';
+  const isJobOwner = isCompanyAdmin && job.companyId === userData?.company?.id;
 
   return (
-    <div className="container py-4">
-      <nav aria-label="breadcrumb" className="mb-4">
-        <ol className="breadcrumb">
-          <li className="breadcrumb-item"><Link to="/">Home</Link></li>
-          <li className="breadcrumb-item"><Link to="/jobs/public">Jobs</Link></li>
-          <li className="breadcrumb-item active" aria-current="page">{job.title}</li>
-        </ol>
-      </nav>
-
-      <div className="row">
-        <div className="col-lg-8">
-          <div className="card mb-4">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h2 className="mb-0">{job.title}</h2>
-              <span className={`badge bg-${job.status?.toLowerCase() === 'active' ? 'success' : 'secondary'}`}>
-                {job.status}
-              </span>
-            </div>
-            <div className="card-body">
-              <div className="mb-4">
-                <h4>Job Description</h4>
-                <div dangerouslySetInnerHTML={{ __html: job.description }} />
-              </div>
-            </div>
-            <div className="card-footer bg-white">
-              <button 
-                onClick={() => navigate(-1)} 
-                className="btn btn-outline-secondary"
-                type="button"
-              >
-                Back to Jobs
-              </button>
-            </div>
-          </div>
+    <div className="job-details container mt-4">
+      <div className="card">
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h1 className="mb-0">{job.title}</h1>
+          <span className={`badge ${job.status === 'active' ? 'bg-success' : 'bg-secondary'}`}>
+            {job.status}
+          </span>
         </div>
-
-        <div className="col-lg-4">
-          <div className="card mb-4">
-            <div className="card-header">
-              <h4>Job Details</h4>
+        <div className="card-body">
+          <h5>Company: {job.Company?.name || 'Not specified'}</h5>
+          
+          <div className="mb-4">
+            <div className="row my-3">
+              <div className="col-md-6">
+                <strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}
+              </div>
+              <div className="col-md-6">
+                <strong>Expires:</strong> {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString() : 'No expiration'}
+              </div>
             </div>
-            <div className="card-body">
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Company:</strong>
-                  <span>{job.Company?.name || 'Not specified'}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Status:</strong>
-                  <span className={`badge ${job.status?.toLowerCase() === 'active' ? 'bg-success' : 'bg-secondary'}`}>
-                    {job.status}
-                  </span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Applications:</strong>
-                  <span>{job.applicationCount || 0}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Approval Status:</strong>
-                  <span>
-                    {job.isApproved 
-                      ? <span className="text-success">Approved</span> 
-                      : <span className="text-warning">Pending</span>}
-                  </span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Posted On:</strong>
-                  <span>{formatDate(job.createdAt)}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Application Deadline:</strong>
-                  <span>{formatDate(job.expiresAt)}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Last Updated:</strong>
-                  <span>{formatDate(job.updatedAt)}</span>
-                </li>
-              </ul>
-            </div>
+            
+            {job.applicationCount > 0 && (
+              <div className="alert alert-info">
+                Applications: {job.applicationCount}
+              </div>
+            )}
+            
+            {job.approvalCount > 0 && (
+              <div className="alert alert-success">
+                School Approvals: {job.approvalCount}
+              </div>
+            )}
           </div>
-
-          {job.Company && (
-            <div className="card">
-              <div className="card-header">
-                <h4>About the Company</h4>
+          
+          <h5>Job Description</h5>
+          <div className="job-description mb-4" dangerouslySetInnerHTML={{ __html: job.description }}></div>
+          
+          <div className="d-flex justify-content-between mt-4">
+            <Link to="/jobs/public" className="btn btn-outline-secondary">
+              Back to Jobs
+            </Link>
+            
+            {isJobOwner ? (
+              <div>
+                <Link to={`/dashboard/applications/${job.id}`} className="btn btn-outline-primary me-2">
+                  View Applications ({job.applicationCount || 0})
+                </Link>
+                <Link to={`/dashboard/jobs/edit/${job.id}`} className="btn btn-outline-secondary">
+                  Edit Job
+                </Link>
               </div>
-              <div className="card-body">
-                <h5>{job.Company.name}</h5>
-                <p className="mb-0">Company ID: {job.companyId}</p>
-              </div>
-            </div>
-          )}
+            ) : (
+              <Button variant="primary" onClick={onApply}>
+                Apply Now
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+const JobDetails = withJobData(JobDetailsDisplay);
 
 export default JobDetails;

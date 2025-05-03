@@ -43,5 +43,23 @@ export const jobService = {
       console.error('Error fetching applications:', error);
       throw error;
     }
+  },
+
+  getJobApplications: async (endpoint, params = {}) => {
+    return await api.get(endpoint, { params });
+  },
+
+  updateApplicationStatus: async (applicationId, status) => {
+    return await api.patch(`/applications/${applicationId}/status`, { status });
+  },
+
+  getJobById: async (id) => {
+    try {
+      const response = await api.get(`/jobs/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching job:', error);
+      throw error;
+    }
   }
 };

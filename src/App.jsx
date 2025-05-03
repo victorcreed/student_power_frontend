@@ -13,6 +13,7 @@ import CompanyDashboard from './pages/CompanyDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 import JobsPublic from './pages/JobsPublic';
 import JobDetails from './pages/JobDetails';
+import JobApplicationsPage from './pages/applications/JobApplicationsPage';
 
 function App() {
   const { isAuthenticated, userType, isLoading, userData } = useSelector(state => state.auth);
@@ -104,6 +105,10 @@ function App() {
           />
           <Route path="/jobs/public" element={<JobsPublic />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
+          <Route 
+            path="/dashboard/applications/:jobId" 
+            element={<ProtectedRoute element={<JobApplicationsPage />} />} 
+          />
         </Routes>
       </main>
       

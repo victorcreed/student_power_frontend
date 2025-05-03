@@ -3,12 +3,49 @@ import { jobService } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import Button from '../common/Button';
 import Pagination from '../common/Pagination';
+import { useNavigate } from 'react-router-dom';
 
-const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
+const withApplicationHandling = (Component) => {
+  return (props) => {
+    const navigate = useNavigate();
+    const { userData } = useSelector(state => state.auth);
+    
+    const handleViewApplications = (jobId) => {
+      navigate(`/dashboard/applications/${jobId}`);
+    };
+    
+    return <Component {...props} onViewApplications={handleViewApplications} />;
+  };
+};
+
+const withJobViewing = Component => {
+  return props => {
+    const navigate = useNavigate();
+    
+    const handleView = (jobId) => {
+      navigate(`/jobs/${jobId}`);
+    };
+    
+    return <Component {...props} onView={handleView} />;
+  };
+};
+
+const withJobEditing = Component => {
+  return props => {
+    const navigate = useNavigate();
+    
+    const handleEdit = (jobId) => {
+      navigate(`/dashboard/jobs/edit/${jobId}`);
+    };
+    
+    return <Component {...props} onEdit={handleEdit} />;
+  };
+};
+
+const JobListBase = ({ onEdit, onView, onViewApplications, showApprovals }) => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { userData } = useSelector(state => state.auth);
   const [statusFilter, setStatusFilter] = useState('');
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -32,12 +69,16 @@ const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
         status: statusFilter 
       });
       
-      setJobs(response.data.jobs || []);
-      setPagination({
-        currentPage: response.data.pagination?.currentPage || 1,
-        totalPages: response.data.pagination?.totalPages || 1,
-        totalItems: response.data.pagination?.totalItems || 0
-      });
+      if (response.success) {
+        setJobs(response.data || []);
+        setPagination({
+          currentPage: page,
+          totalPages: Math.ceil((response.count || 0) / 10),
+          totalItems: response.count || 0
+        });
+      } else {
+        throw new Error('Failed to fetch jobs');
+      }
     } catch (err) {
       setError('Failed to load jobs. Please try again.');
       console.error('Error fetching jobs:', err);
@@ -124,7 +165,7 @@ const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
                   <th>Title</th>
                   <th>Status</th>
                   {showApprovals && <th>School Approvals</th>}
-                  {showApprovals && <th>Applications</th>}
+                  <th>Applications</th>
                   <th>Expires</th>
                   <th>Date Created</th>
                   <th>Actions</th>
@@ -139,8 +180,8 @@ const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
                         {job.status}
                       </span>
                     </td>
-                    {showApprovals && <td>{job.approvals || 0}</td>}
-                    {showApprovals && <td>{job.applications || 0}</td>}
+                    {showApprovals && <td>{job.approvalCount || 0}</td>}
+                    <td>{job.applicationCount || 0}</td>
                     <td>
                       {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString() : 'No expiration'}
                     </td>
@@ -159,14 +200,12 @@ const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
                         >
                           Edit
                         </Button>
-                        {showApprovals && (
-                          <Button 
-                            variant="outline-info" 
-                            onClick={() => onViewApplications(job.id)}
-                          >
-                            Apps ({job.applications || 0})
-                          </Button>
-                        )}
+                        <Button 
+                          variant="outline-info" 
+                          onClick={() => onViewApplications(job.id)}
+                        >
+                          Apps ({job.applicationCount || 0})
+                        </Button>
                         <Button 
                           variant="outline-danger" 
                           onClick={() => handleDelete(job.id)}
@@ -191,5 +230,7 @@ const JobList = ({ onEdit, onView, onViewApplications, showApprovals }) => {
     </div>
   );
 };
+
+const JobList = withApplicationHandling(withJobViewing(withJobEditing(JobListBase)));
 
 export default JobList;
