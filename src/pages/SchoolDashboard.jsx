@@ -51,7 +51,7 @@ const SchoolDashboard = () => {
           <div className="school-dashboard-overview">
             <div className="row">
               <div className="col-md-4 mb-4">
-                <div className="card">
+                <div className="card" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
                   <div className="card-body">
                     <h5 className="card-title">School Profile</h5>
                     <p className="card-text">
@@ -63,18 +63,18 @@ const SchoolDashboard = () => {
               </div>
               
               <div className="col-md-8 mb-4">
-                <div className="card">
+                <div className="card" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
                   <div className="card-body">
                     <h5 className="card-title">Quick Stats</h5>
                     <div className="row">
                       <div className="col-6">
-                        <div className="stat-box p-3 bg-light rounded">
+                        <div className="stat-box bg-transparent p-3 rounded">
                           <h3>{schoolData.students.length}</h3>
                           <p className="mb-0">Students</p>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="stat-box p-3 bg-light rounded">
+                        <div className="stat-box bg-transparent p-3 rounded">
                           <h3>{schoolData.jobs.length}</h3>
                           <p className="mb-0">Jobs</p>
                         </div>
@@ -96,7 +96,8 @@ const SchoolDashboard = () => {
         
         <ul className="nav nav-tabs mb-4">
           <li className="nav-item">
-            <button 
+            <button
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)'}}
               className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
@@ -104,7 +105,8 @@ const SchoolDashboard = () => {
             </button>
           </li>
           <li className="nav-item">
-            <button 
+            <button
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }} 
               className={`nav-link ${activeTab === 'jobs' ? 'active' : ''}`}
               onClick={() => setActiveTab('jobs')}
             >
@@ -112,7 +114,8 @@ const SchoolDashboard = () => {
             </button>
           </li>
           <li className="nav-item">
-            <button 
+            <button
+              style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }} 
               className={`nav-link ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
