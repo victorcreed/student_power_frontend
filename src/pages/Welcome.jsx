@@ -82,10 +82,14 @@ const JobListTable = ({ jobs, count, isLoading, error }) => {
 
 const Welcome = () => {
   const dispatch = useDispatch();
-  const { jobs = [], status, error, count = 0 } = useSelector(state => state.jobs || {});
+  const selectJobsState = state =>
+    state.jobs ||
+    state.jobsSlice ||
+    (state.slices && state.slices.jobs) ||
+    {};
 
+  const { jobs = [], status, error, count = 0 } = useSelector(selectJobsState);
   useEffect(() => {
-    // debugger // Removed
     dispatch(fetchPublicJobs());
   }, [dispatch]);
 
@@ -131,37 +135,13 @@ const Welcome = () => {
         </div>
       </div>
 
-      {/* Job Opportunities Section */}
-      <div className="row mt-5">
-        <div className="col-12">
-          <div className="card bg-light">
-            <div className="card-body">
-              <h3 className="card-title text-center mb-4">Explore Job Opportunities</h3>
-              <div className="d-flex justify-content-center gap-3">
-                <Link to="/jobs" className="btn btn-primary">
-                  Browse All Jobs
-                </Link>
-                <Link to="/jobs/featured" className="btn btn-outline-primary">
-                  Featured Positions
-                </Link>
-              </div>
-              <div className="text-center mt-3">
-                <small className="text-muted">
-                  Looking for a specific position? Find opportunities tailored to your skills and interests.
-                </small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Available Jobs Table */}
       <div className="row mt-5 mb-4">
         <div className="col-12">
           <div className="card">
             <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
               <h4 className="mb-0">Available Job Opportunities</h4>
-              <Link to="/jobs" className="btn btn-light btn-sm">View All</Link>
+              <Link to="/jobs/public" className="btn btn-light btn-sm">View All</Link>
             </div>
             <div className="card-body">
               <JobListTable jobs={jobs} count={count} isLoading={isLoading} error={error} />
@@ -171,7 +151,7 @@ const Welcome = () => {
                 <span className="text-muted">
                   {!isLoading && !error && (jobs?.length > 0 ? `Showing ${jobs.length} of ${count} jobs` : 'No jobs available')}
                 </span>
-                <Link to="/jobs" className="btn btn-primary">Browse All Jobs</Link>
+                <Link to="/jobs/public" className="btn btn-primary">Browse All Jobs</Link>
               </div>
             </div>
           </div>
