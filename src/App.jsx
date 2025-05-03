@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -75,10 +75,6 @@ function App() {
   
   return (
     <div className="App container">
-      <header className="App-header">
-        <h1>Welcome to Student Power</h1>
-      </header>
-      
       <Navigation />
       
       <main className="py-4">

@@ -19,9 +19,9 @@ const Navigation = () => {
   };
   
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-transparent">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/">StudentPower</Link>
+        <Link className="text-white display-5 fw-bold text-decoration-none" to="/">Student Power</Link>
         
         <button 
           className="navbar-toggler" 
@@ -38,23 +38,23 @@ const Navigation = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+              <Link className="btn btn-primary me-2" to="/">Home</Link>
             </li>
             
             {!isAuthenticated ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/signin">Sign In</Link>
+                  <Link className="btn btn-primary me-2" to="/signin">Sign In</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/signup">Sign Up</Link>
+                  <Link className="btn btn-primary" to="/signup">Sign Up</Link>
                 </li>
               </>
             ) : (
               <>
                 <li className="nav-item">
                   <Link 
-                    className="nav-link" 
+                    className="btn btn-primary me-2" 
                     to={getDashboardLink()}
                   >
                     Dashboard
@@ -62,7 +62,7 @@ const Navigation = () => {
                 </li>
                 <li className="nav-item">
                   <button 
-                    className="nav-link btn btn-link" 
+                    className="btn btn-primary" 
                     onClick={handleLogout}
                   >
                     Logout
