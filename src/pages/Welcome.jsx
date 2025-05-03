@@ -14,7 +14,7 @@ const getStatusBadgeClass = (status) => {
 };
 
 const InfoCard = ({ title, text, link, linkText }) => (
-  <div className="card h-100">
+  <div className="card h-100" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
     <div className="card-body">
       <h5 className="card-title">{title}</h5>
       <p className="card-text">{text}</p>
@@ -137,9 +137,11 @@ const Welcome = () => {
       {/* Available Jobs Table */}
       <div className="row mt-5 mb-4">
         <div className="col-12">
-          <div className="card">
-            <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">Available Job Opportunities</h4>
+          <div className="card" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
+            <div className="text-white p-2 rounded d-flex justify-content-between align-items-center" 
+              style={{ backgroundColor: '#3b53e4'}}
+            >
+              <p className="mb-0 fs-4">Available Job Opportunities</p>
               <Link to="/jobs/public" className="btn btn-light btn-sm">View All</Link>
             </div>
             <div className="card-body">
@@ -150,7 +152,9 @@ const Welcome = () => {
                 <span className="text-muted">
                   {!isLoading && !error && (jobs?.length > 0 ? `Showing ${jobs.length} of ${count} jobs` : 'No jobs available')}
                 </span>
-                <Link to="/jobs/public" className="btn btn-primary">Browse All Jobs</Link>
+                <Link to="/jobs/public" className="btn btn-primary"
+                style={{ backgroundColor: '#3b53e4'}}
+                >Browse All Jobs</Link>
               </div>
             </div>
           </div>
