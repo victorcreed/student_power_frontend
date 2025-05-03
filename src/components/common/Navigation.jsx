@@ -21,7 +21,13 @@ const Navigation = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-transparent">
       <div className="container-fluid">
-        <Link className="text-white display-5 fw-bold text-decoration-none" to="/">Student Power</Link>
+        <Link className="text-decoration-none" to="/">
+          <h1 className="display-4 fw-bold m-0">
+          <span style={{ color: '#3b53e4' }}>Power </span>
+          <span className="text-dark fw-normal">of the </span>
+          <span style={{ color: '#3b53e4' }}>Students</span>
+          </h1>
+        </Link>
         
         <button 
           className="navbar-toggler" 
@@ -38,23 +44,24 @@ const Navigation = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="btn btn-primary me-2" to="/">Home</Link>
+              <Link className="btn me-2" style={{ backgroundColor: '#3b53e4', color: '#ffffff' }} to="/">Home</Link>
             </li>
             
             {!isAuthenticated ? (
               <>
                 <li className="nav-item">
-                  <Link className="btn btn-primary me-2" to="/signin">Sign In</Link>
+                  <Link className="btn me-2" style={{ backgroundColor: '#3b53e4' }} to="/signin">Sign In</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="btn btn-primary" to="/signup">Sign Up</Link>
+                  <Link className="btn" style={{ backgroundColor: '#3b53e4' }} to="/signup">Sign Up</Link>
                 </li>
               </>
             ) : (
               <>
                 <li className="nav-item">
                   <Link 
-                    className="btn btn-primary me-2" 
+                    className="btn me-2"
+                    style={{ backgroundColor: '#3b53e4', color: '#ffffff' }} 
                     to={getDashboardLink()}
                   >
                     Dashboard
@@ -62,7 +69,8 @@ const Navigation = () => {
                 </li>
                 <li className="nav-item">
                   <button 
-                    className="btn btn-primary" 
+                    className="btn"
+                    style={{ backgroundColor: '#3b53e4', color: '#ffffff' }} 
                     onClick={handleLogout}
                   >
                     Logout

@@ -1,5 +1,6 @@
 body {
-    background-image: url('/bg.jpeg');
+    background: #2a8bfa;
+    background: linear-gradient(344deg,rgba(42, 139, 250, 1) 0%, rgba(253, 255, 117, 1) 100%);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

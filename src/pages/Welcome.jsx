@@ -34,7 +34,7 @@ const InfoCard = ({ title, text, link, linkText }) => (
   </div>
 );
 
-const JobListTable = ({ jobs, count, isLoading, error }) => {
+const JobListTable = ({ jobs, isLoading, error }) => {
   if (isLoading) return <div className="text-center py-4">Loading jobs...</div>;
   if (error) return <div className="alert alert-danger">{error}</div>;
 
@@ -96,9 +96,8 @@ const Welcome = () => {
   const isLoading = status === 'loading';
 
   return (
-    <div className="container-fluid px-4">
-      {/* Jumbotron */}
-      <div className="jumbotron bg-light p-5 rounded mb-5">
+    <div className="container mt-4">
+      <div className="jumbotron bg-light p-5 rounded bg-opacity-75">
         <h1 className="display-4">Welcome to Student Power!</h1>
         <p className="lead">
           Your ultimate platform for academic success and collaboration.
@@ -108,9 +107,9 @@ const Welcome = () => {
           Explore our features to enhance your learning experience, connect with peers,
           and achieve your educational goals.
         </p>
-        <Link to="/signup" className="btn btn-primary btn-lg mt-3">
+        <button className="btn btn-lg mt-3" style={{ backgroundColor: '#3b53e4', color: '#ffffff' }}>
           Get Started
-        </Link>
+        </button>
       </div>
 
       {/* Feature Cards */}
