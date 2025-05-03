@@ -108,9 +108,9 @@ const Welcome = () => {
           Explore our features to enhance your learning experience, connect with peers,
           and achieve your educational goals.
         </p>
-        <button className="btn btn-primary btn-lg mt-3">
+        <Link to="/signup" className="btn btn-primary btn-lg mt-3">
           Get Started
-        </button>
+        </Link>
       </div>
 
       {/* Feature Cards */}
