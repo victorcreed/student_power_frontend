@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import withLayout from '../hoc/withLayout';
 import UserManagement from '../components/users/UserManagement';
 import JobManagement from '../components/jobs/JobManagement';
+import { fetchPublicJobs } from '../store/slices/jobsSlice';
+import { jobService } from '../services/jobService';
 
 const CompanyDashboard = () => {
   const { userData } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('overview');
+  
+  const selectJobsState = state =>
+    state.jobs ||
+    state.jobsSlice ||
+    (state.slices && state.slices.jobs) ||
+    {};
+    
+  const { jobs = [], status, error } = useSelector(selectJobsState);
+  
   const [companyData, setCompanyData] = useState({
     name: userData?.company?.name || '',
     email: userData?.user?.email || '',
-    opportunities: [],
+    companyId: userData?.company?.id || '',
     applications: []
   });
   
@@ -20,14 +32,34 @@ const CompanyDashboard = () => {
     const fetchCompanyData = async () => {
       try {
         setIsLoading(true);
-        // In a real app, you would fetch additional data from your API here
         
-        // Update with user data from Redux store
         setCompanyData(prev => ({
           ...prev,
           name: userData?.company?.name || prev.name,
-          email: userData?.user?.email || prev.email
+          email: userData?.user?.email || prev.email,
+          companyId: userData?.company?.id || prev.companyId
         }));
+        
+        if (userData?.company?.id) {
+          dispatch(fetchPublicJobs());
+          
+          try {
+            const appResult = await jobService.getApplications();
+            if (appResult.success) {
+              setCompanyData(prev => ({
+                ...prev,
+                applications: appResult.data.map(app => ({
+                  id: app.id,
+                  student: app.studentName || 'Student',
+                  position: app.jobTitle || 'Position',
+                  status: app.status || 'Pending'
+                })).slice(0, 5)
+              }));
+            }
+          } catch (error) {
+            console.error('Error fetching application data:', error);
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch company data:', error);
       } finally {
@@ -36,11 +68,23 @@ const CompanyDashboard = () => {
     };
 
     fetchCompanyData();
-  }, [userData]);
+  }, [userData, dispatch]);
 
-  if (isLoading) {
+  const isLoadingJobs = status === 'loading';
+  
+  if (isLoading || isLoadingJobs) {
     return <div className="text-center py-5">Loading dashboard...</div>;
   }
+
+  const companyJobs = jobs.filter(job => job.companyId === userData?.company?.id);
+  const opportunities = companyJobs.map(job => ({
+    id: job.id,
+    title: job.title,
+    status: job.status,
+    expiresAt: job.expiresAt,
+    applicants: job.applicationCount || 0,
+    isApproved: job.isApproved
+  }));
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -59,7 +103,8 @@ const CompanyDashboard = () => {
                     <h5 className="card-title">Company Profile</h5>
                     <p className="card-text">
                       <strong>Name:</strong> {companyData.name}<br />
-                      <strong>Email:</strong> {companyData.email}
+                      <strong>Email:</strong> {companyData.email}<br />
+                      <strong>Total Jobs:</strong> {opportunities.length}
                     </p>
                   </div>
                 </div>
@@ -72,13 +117,13 @@ const CompanyDashboard = () => {
                     <div className="row">
                       <div className="col-6">
                         <div className="stat-box p-3 bg-light rounded">
-                          <h3>{companyData.opportunities.length}</h3>
+                          <h3>{opportunities.length}</h3>
                           <p className="mb-0">Open Positions</p>
                         </div>
                       </div>
                       <div className="col-6">
                         <div className="stat-box p-3 bg-light rounded">
-                          <h3>{companyData.opportunities.reduce((sum, opp) => sum + opp.applicants, 0)}</h3>
+                          <h3>{opportunities.reduce((sum, opp) => sum + opp.applicants, 0)}</h3>
                           <p className="mb-0">Total Applicants</p>
                         </div>
                       </div>
@@ -95,14 +140,23 @@ const CompanyDashboard = () => {
                     Active Opportunities
                   </div>
                   <div className="card-body">
-                    <ul className="list-group">
-                      {companyData.opportunities.map(opportunity => (
-                        <li key={opportunity.id} className="list-group-item d-flex justify-content-between align-items-center">
-                          {opportunity.title}
-                          <span className="badge bg-primary rounded-pill">{opportunity.applicants} applicants</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {opportunities.length > 0 ? (
+                      <ul className="list-group">
+                        {opportunities.map(opportunity => (
+                          <li key={opportunity.id} className="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                              {opportunity.title}
+                              <span className={`ms-2 badge ${opportunity.isApproved ? 'bg-success' : 'bg-warning'}`}>
+                                {opportunity.isApproved ? 'Approved' : 'Pending'}
+                              </span>
+                            </div>
+                            <span className="badge bg-primary rounded-pill">{opportunity.applicants} applicants</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-center py-3">No active opportunities. <button className="btn btn-sm btn-primary" onClick={() => setActiveTab('jobs')}>Create one</button></p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -113,20 +167,24 @@ const CompanyDashboard = () => {
                     Recent Applications
                   </div>
                   <div className="card-body">
-                    <ul className="list-group">
-                      {companyData.applications.map(application => (
-                        <li key={application.id} className="list-group-item d-flex justify-content-between align-items-center">
-                          <div>
-                            <strong>{application.student}</strong>
-                            <br />
-                            <small className="text-muted">{application.position}</small>
-                          </div>
-                          <span className={`badge ${application.status === 'Interview' ? 'bg-success' : 'bg-warning'} rounded-pill`}>
-                            {application.status}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    {companyData.applications.length > 0 ? (
+                      <ul className="list-group">
+                        {companyData.applications.map(application => (
+                          <li key={application.id} className="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                              <strong>{application.student}</strong>
+                              <br />
+                              <small className="text-muted">{application.position}</small>
+                            </div>
+                            <span className={`badge ${application.status === 'Interview' ? 'bg-success' : 'bg-warning'} rounded-pill`}>
+                              {application.status}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-center py-3">No recent applications</p>
+                    )}
                   </div>
                 </div>
               </div>

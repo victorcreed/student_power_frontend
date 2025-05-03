@@ -4,7 +4,6 @@ export const jobService = {
   getJobs: async (params = {}) => {
     try {
       const response = await api.get('/jobs', { params });
-      console.log('API Response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -34,5 +33,15 @@ export const jobService = {
   
   approveJob: (jobId) => {
     return api.patch(`/jobs/${jobId}/approve`);
+  },
+  
+  getApplications: async (params = {}) => {
+    try {
+      const response = await api.get('/applications', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      throw error;
+    }
   }
 };

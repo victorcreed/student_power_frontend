@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
+import { jobService } from '../../services/jobService';
 
 export const fetchPublicJobs = createAsyncThunk(
   'jobs/fetchPublicJobs',
-  async (_, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/jobs');
-      return response.data;
+      const response = await jobService.getJobs(params);
+      return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch jobs');
     }
@@ -18,7 +19,7 @@ export const fetchJobById = createAsyncThunk(
   async (id, { rejectWithValue, dispatch }) => {
     try {
       dispatch(setJobLoading(true));
-      const response = await api.get(`/jobs/${id}`);
+      const response = await jobService.getJob(id);
       
       if (!response.data || !response.data.success) {
         return rejectWithValue('Job not found');
