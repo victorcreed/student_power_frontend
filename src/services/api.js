@@ -90,4 +90,8 @@ export const authService = {
   }
 };
 
+export const schoolService = {
+  getSchools: () => api.get('/schools')
+};
+
 export default api;

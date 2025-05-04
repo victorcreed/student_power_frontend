@@ -25,7 +25,7 @@ function App() {
       return 'school';
     } else if (userData.user.role === 'company_admin') {
       return 'company';
-    } else if (userData.user.role === 'user' && userData.school) {
+    } else if (userData.user.role === 'user') {
       return 'student';
     }
     

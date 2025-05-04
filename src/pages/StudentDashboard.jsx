@@ -59,18 +59,25 @@ const StudentDashboard = () => {
   }, [userData]);
 
   const fetchApprovedJobs = async (page = 1) => {
-    if (!userData?.school?.id) return;
     
     try {
       setJobsLoading(true);
       setJobsError(null);
       
-      const response = await jobService.getJobs({ 
+      let params = { 
         page,
         limit: 10,
         status: 'active',
-        schoolId: userData.school.id
-      });
+        schoolId: userData?.school?.id
+      }
+
+      if (userData?.school?.id) {
+        params = {
+          ...params,
+          schoolId: userData?.school?.id
+        };
+      }
+      const response = await jobService.getJobs(params);
       
       setJobs(response.data || []);
       setPagination({

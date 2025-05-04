@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SchoolSignup from '../components/auth/SchoolSignup';
 import CompanySignup from '../components/auth/CompanySignup';
+import StudentSignup from '../components/auth/StudentSignup';
 import Button from '../components/common/Button';
 import withLayout from '../hoc/withLayout';
 import { authService } from '../services/api';
@@ -74,6 +75,14 @@ const Signup = () => {
             <Button 
               variant="outline" 
               className="btn-account"
+              onClick={() => setUserType('student')}
+            >
+              Student
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="btn-account"
               onClick={() => setUserType('school')}
             >
               School
@@ -100,8 +109,10 @@ const Signup = () => {
           
           {userType === 'school' ? (
             <SchoolSignup onSubmit={handleSubmit} />
-          ) : (
+          ) : userType === 'company' ? (
             <CompanySignup onSubmit={handleSubmit} />
+          ) : (
+            <StudentSignup onSubmit={handleSubmit} />
           )}
           
           <div className="text-center mt-4">
