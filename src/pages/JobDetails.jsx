@@ -10,6 +10,8 @@ const withJobData = Component => {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isApplying, setIsApplying] = useState(false);
+    const [applicationSuccess, setApplicationSuccess] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated, userData } = useSelector(state => state.auth);
 
@@ -34,13 +36,31 @@ const withJobData = Component => {
       fetchJob();
     }, [id]);
 
-    const handleApply = () => {
+    const handleApply = async () => {
       if (!isAuthenticated) {
         navigate('/signin?redirect=' + encodeURIComponent(`/jobs/${id}`));
         return;
       }
       
-      navigate(`/dashboard/applications/apply/${id}`);
+      try {
+        setIsApplying(true);
+        await jobService.apply(id, {});
+        setApplicationSuccess(true);
+        
+        setJob(prevJob => ({
+          ...prevJob,
+          isApplied: true
+        }));
+        
+        setTimeout(() => {
+          setApplicationSuccess(false);
+        }, 3000);
+      } catch (err) {
+        alert('Failed to apply for job. Please try again.');
+        console.error('Error applying to job:', err);
+      } finally {
+        setIsApplying(false);
+      }
     };
 
     return <Component 
@@ -51,11 +71,22 @@ const withJobData = Component => {
       onApply={handleApply}
       isAuthenticated={isAuthenticated}
       userData={userData}
+      isApplying={isApplying}
+      applicationSuccess={applicationSuccess}
     />;
   };
 };
 
-const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, userData }) => {
+const JobDetailsDisplay = ({ 
+  job, 
+  loading, 
+  error, 
+  onApply, 
+  isAuthenticated, 
+  userData,
+  isApplying,
+  applicationSuccess
+}) => {
   if (loading) {
     return <div className="text-center py-4">Loading job details...</div>;
   }
@@ -75,6 +106,11 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
 
   return (
     <div className="job-details container mt-4">
+      {applicationSuccess && (
+        <div className="alert alert-success">
+          Successfully applied for the job!
+        </div>
+      )}
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h1 className="mb-0">{job.title}</h1>
@@ -132,9 +168,19 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
                 </Link>
               </div>
             ) : isRegularUser ? (
-              <Button variant="primary" onClick={onApply}>
-                Apply Now
-              </Button>
+              (job.hasApplied || job.isApplied) ? (
+                <Button variant="success" disabled>
+                  Applied
+                </Button>
+              ) : (
+                <Button 
+                  variant="primary" 
+                  onClick={onApply} 
+                  disabled={isApplying}
+                >
+                  {isApplying ? 'Applying...' : 'Apply Now'}
+                </Button>
+              )
             ) : null}
           </div>
         </div>

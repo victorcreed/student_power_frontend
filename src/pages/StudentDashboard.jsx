@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import withLayout from '../hoc/withLayout';
 import { jobService } from '../services/jobService';
 import Button from '../components/common/Button';
@@ -13,6 +14,7 @@ const EnhancedJobRow = withJobActions(JobRow);
 
 const StudentDashboard = () => {
   const { userData } = useSelector(state => state.auth);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [studentData, setStudentData] = useState({
     name: userData?.user?.name || '',
@@ -138,21 +140,8 @@ const StudentDashboard = () => {
     }
   };
 
-  const handleViewJob = async (jobId) => {
-    try {
-      setJobDetailLoading(true);
-      setViewingJobId(jobId);
-      setView('jobDetail');
-      
-      const response = await jobService.getJob(jobId);
-      setJobDetail(response.data.job);
-    } catch (err) {
-      alert('Failed to load job details. Please try again.');
-      console.error('Error loading job details:', err);
-      setView('dashboard');
-    } finally {
-      setJobDetailLoading(false);
-    }
+  const handleViewJob = (jobId) => {
+    navigate(`/jobs/${jobId}`);
   };
   
   const handleBackToJobs = () => {
