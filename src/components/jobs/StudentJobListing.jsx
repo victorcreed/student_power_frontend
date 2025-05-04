@@ -31,7 +31,6 @@ const StudentJobListing = () => {
         status: 'active',
         schoolId: userData?.school?.id
       });
-      
       setJobs(response.data.jobs || []);
       setPagination({
         currentPage: response.data.pagination?.currentPage || 1,
