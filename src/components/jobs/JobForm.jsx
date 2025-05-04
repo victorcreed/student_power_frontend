@@ -1,6 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { jobService } from '../../services/jobService';
 import Button from '../common/Button';
+import { Editor } from '@tinymce/tinymce-react';
+
+const withRTE = (Component) => (props) => {
+  return <Component {...props} RTEComponent={Editor} />;
+};
+
+const RichTextEditor = withRTE(({ value, onChange, RTEComponent }) => (
+  <RTEComponent
+    apiKey="your-api-key-here" // Replace with your TinyMCE API key or remove for development
+    value={value}
+    onEditorChange={onChange}
+    init={{
+      height: 300,
+      menubar: false,
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'charmap',
+        'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'table', 'help', 'wordcount'
+      ],
+      toolbar: 'undo redo | blocks | ' +
+        'bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | ' +
+        'removeformat help',
+      blocks: 'h1 h2 h3 h4 h5 h6 p',
+    }}
+  />
+));
 
 const JobForm = ({ jobId, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -52,6 +78,10 @@ const JobForm = ({ jobId, onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleDescriptionChange = (value) => {
+    setFormData(prev => ({ ...prev, description: value }));
   };
   
   const handleSubmit = async (e) => {
@@ -120,89 +150,12 @@ const JobForm = ({ jobId, onSuccess }) => {
           
           <div className="mb-3">
             <label htmlFor="description" className="form-label">Description</label>
-            <div className="rich-text-toolbar">
-              <button 
-                type="button" 
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => {
-                  const textarea = document.getElementById('description');
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const text = textarea.value;
-                  const before = text.substring(0, start);
-                  const selected = text.substring(start, end);
-                  const after = text.substring(end);
-                  
-                  const newText = before + '<strong>' + selected + '</strong>' + after;
-                  setFormData(prev => ({ ...prev, description: newText }));
-                }}
-              >
-                <i className="bi bi-type-bold"></i> Bold
-              </button>
-              <button 
-                type="button" 
-                className="btn btn-sm btn-outline-secondary ms-1"
-                onClick={() => {
-                  const textarea = document.getElementById('description');
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const text = textarea.value;
-                  const before = text.substring(0, start);
-                  const selected = text.substring(start, end);
-                  const after = text.substring(end);
-                  
-                  const newText = before + '<em>' + selected + '</em>' + after;
-                  setFormData(prev => ({ ...prev, description: newText }));
-                }}
-              >
-                <i className="bi bi-type-italic"></i> Italic
-              </button>
-              <button 
-                type="button" 
-                className="btn btn-sm btn-outline-secondary ms-1"
-                onClick={() => {
-                  const textarea = document.getElementById('description');
-                  const start = textarea.selectionStart;
-                  const text = textarea.value;
-                  const before = text.substring(0, start);
-                  const after = text.substring(start);
-                  
-                  const newText = before + '<ul><li></li></ul>' + after;
-                  setFormData(prev => ({ ...prev, description: newText }));
-                }}
-              >
-                <i className="bi bi-list-ul"></i> List
-              </button>
-              <button 
-                type="button" 
-                className="btn btn-sm btn-outline-secondary ms-1"
-                onClick={() => {
-                  const textarea = document.getElementById('description');
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const text = textarea.value;
-                  const before = text.substring(0, start);
-                  const selected = text.substring(start, end);
-                  const after = text.substring(end);
-                  
-                  const newText = before + '<h3>' + selected + '</h3>' + after;
-                  setFormData(prev => ({ ...prev, description: newText }));
-                }}
-              >
-                <i className="bi bi-type-h3"></i> Heading
-              </button>
-            </div>
-            <textarea
-              className="form-control"
-              id="description"
-              name="description"
+            <RichTextEditor
               value={formData.description}
-              onChange={handleChange}
-              rows="10"
-              required
-            ></textarea>
+              onChange={handleDescriptionChange}
+            />
             <small className="form-text text-muted">
-              You can use HTML tags like &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;h3&gt; for formatting.
+              Use formatting tools above for your description.
             </small>
           </div>
           

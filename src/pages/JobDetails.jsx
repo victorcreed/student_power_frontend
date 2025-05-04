@@ -83,15 +83,21 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
           </span>
         </div>
         <div className="card-body">
-          <h5>Company: {job.Company?.name || 'Not specified'}</h5>
+          <h2>Company: {job.Company?.name || 'Not specified'}</h2>
           
           <div className="mb-4">
             <div className="row my-3">
               <div className="col-md-6">
-                <strong>Posted:</strong> {new Date(job.createdAt).toLocaleDateString()}
+                <strong>Open Until:</strong> {new Date(job.createdAt).toLocaleDateString()}
               </div>
               <div className="col-md-6">
-                <strong>Expires:</strong> {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString() : 'No expiration'}
+                <strong>Project deadline:</strong> {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString() : 'No expiration'}
+              </div>
+              <div className="col-md-6">
+                <strong>Efforts: 4hours</strong> 
+              </div>
+              <div className="col-md-6">
+                <strong>Benefits: Viru folk festival</strong>
               </div>
             </div>
             
