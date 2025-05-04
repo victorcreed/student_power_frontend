@@ -94,7 +94,7 @@ const HomeHero = () => {
             <div className="card h-100 border-0" style={{ backgroundColor: "rgba(255, 255, 255, 0)", borderRadius: "1rem" }}>
               <img src={card.img} className="card-img-top" width={200} height={220}/>
               <div className="card-body text-center">
-                <h5 className="card-title text-black">{card.title}</h5>
+                <h5 className="btn me-2 text-white" style={{ backgroundColor: '#3b53e4' }}>{card.title}</h5>
               </div>
             </div>
             </Link>
@@ -132,7 +132,7 @@ const Welcome = () => {
           Explore our features to enhance your learning experience, connect with peers,
           and achieve your educational goals.
         </p>
-        <p><em>Not a user yet? Create an account</em></p>
+        <p><span style={{ color: '#3b53e4', fontWeight: 'bold'}} >Not a user yet? Create an account</span></p>
         <HomeHero></HomeHero>
       </div>
       
