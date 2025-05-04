@@ -150,7 +150,7 @@ const Welcome = () => {
             <div className="card-footer bg-light">
               <div className="d-flex justify-content-between align-items-center">
                 <span className="text-muted">
-                  {!isLoading && !error && (jobs?.length > 0 ? `Showing ${jobs.length} of ${count} jobs` : 'No jobs available')}
+                  {!isLoading && !error && (jobs?.length > 0 ? `Showing ${jobs.length} of ${count} jobs` : 'No projects available')}
                 </span>
                 <Link to="/jobs/public" className="btn btn-primary"
                 style={{ backgroundColor: '#3b53e4'}}
