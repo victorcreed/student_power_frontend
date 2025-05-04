@@ -350,6 +350,29 @@ const StudentDashboard = () => {
                 </div>
               </div>
             </div>
+
+
+            <div className="row mt-5">
+              <div className="col-md-4 mb-4">
+                <div className='card-body'>
+                  <h5 className='card-text'>Completion Rate:</h5>
+                  <h4 className="card-title">100%</h4>
+                </div>
+              </div>
+              <div className="col-md-4 mb-4">
+                <div className='card-body'>
+                  <h5 className='card-text'>Rating:</h5>
+                  <h4 className="card-title">4.6</h4>
+                </div>
+              </div>
+              <div className="col-md-4 mb-4">
+                <div className='card-body'>
+                  <h5 className='card-text'>Current Project Progress:</h5>
+                  <h4 className="card-title">65%</h4>
+                </div>
+              </div>
+            </div>
+
           </div>
         );
     }
