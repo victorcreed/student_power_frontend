@@ -123,7 +123,8 @@ const StudentSignup = ({ onSubmit }) => {
                     <li className="mb-2">✓ Enhanced Profile</li>
                     <li className="mb-2">✓ Priority Applications</li>
                     <li className="mb-2">✓ Unlimited Resources</li>
-                    <li className="mb-2">✓ Career Coaching</li>
+                    <li className="mb-2">✓ Career path</li>
+                    <li className="mb-2">✓ Certificate</li>
                   </ul>
                   <Button 
                     type="button" 
