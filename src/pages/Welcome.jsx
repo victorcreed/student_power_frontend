@@ -71,7 +71,7 @@ const JobListTable = ({ jobs, isLoading, error }) => {
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="text-center">No jobs available</td>
+              <td colSpan="5" className="text-center">No projects available</td>
             </tr>
           )}
         </tbody>
@@ -154,7 +154,7 @@ const Welcome = () => {
                 </span>
                 <Link to="/jobs/public" className="btn btn-primary"
                 style={{ backgroundColor: '#3b53e4'}}
-                >Browse All Jobs</Link>
+                >Browse All Projects</Link>
               </div>
             </div>
           </div>
