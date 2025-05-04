@@ -80,6 +80,31 @@ const JobListTable = ({ jobs, isLoading, error }) => {
   );
 };
 
+const HomeHero = () => {
+  return (
+    <div className="container mt-5">
+      <div className="row">
+        {[
+          { img: "/student.svg", title: "Student", link: "/signup" },
+          { img: "/teacher.svg", title: "Teacher", link: "/signup" },
+          { img: "/company.svg", title: "Company", link: "/signup" }
+        ].map((card, index) => (
+          <div className="col-md-4 mb-4" key={index}>
+            <Link to={card.link} className="text-decoration-none">
+            <div className="card h-100 border-0" style={{ backgroundColor: "rgba(255, 255, 255, 0)", borderRadius: "1rem" }}>
+              <img src={card.img} className="card-img-top" width={200} height={220}/>
+              <div className="card-body text-center">
+                <h5 className="card-title text-black">{card.title}</h5>
+              </div>
+            </div>
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const Welcome = () => {
   const dispatch = useDispatch();
   const selectJobsState = state =>
@@ -107,12 +132,12 @@ const Welcome = () => {
           Explore our features to enhance your learning experience, connect with peers,
           and achieve your educational goals.
         </p>
-        <button className="btn btn-lg mt-3" style={{ backgroundColor: '#3b53e4', color: '#ffffff' }}>
-          Get Started
-        </button>
+        <p><em>Not a user yet? Create an account</em></p>
+        <HomeHero></HomeHero>
       </div>
-
-      {/* Feature Cards */}
+      
+      
+      {/* uncomment later
       <div className="row mt-5">
         <div className="col-md-4 mb-4">
           <InfoCard
@@ -133,6 +158,8 @@ const Welcome = () => {
           />
         </div>
       </div>
+      */}
+
 
       {/* Available Jobs Table */}
       <div className="row mt-5 mb-4">
