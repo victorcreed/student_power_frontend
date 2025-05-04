@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from './api/config';
 const getAuthToken = () => localStorage.getItem('auth_token');
 
 const api = axios.create({
-  baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: process.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
