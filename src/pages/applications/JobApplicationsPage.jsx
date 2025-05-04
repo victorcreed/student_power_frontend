@@ -35,9 +35,9 @@ const withApplicationData = Component => {
             limit: 10
           });
 
-          setApplications(response.data.applications || []);
-          setJob(response.data.jobInfo || {});
-          setPagination(response.data.pagination || {
+          setApplications(response.data.data.applications || []);
+          setJob(response.data.data.jobInfo || {});
+          setPagination(response.data.data.pagination || {
             totalItems: 0,
             totalPages: 1,
             currentPage: 1,

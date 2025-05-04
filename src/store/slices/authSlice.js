@@ -47,8 +47,14 @@ export const signIn = createAsyncThunk(
         userData: response.data.data
       };
     } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Failed to sign in';
-      return rejectWithValue(errorMessage);
+      if (error.response) {
+        const errorData = error.response.data;
+        const errorMessage = errorData?.error || errorData?.message || 'Authentication failed';
+        const errorCode = errorData?.code || 'UNKNOWN_ERROR';
+        debugger
+        return rejectWithValue({ message: errorMessage, code: errorCode });
+      }
+      return rejectWithValue({ message: 'Network error. Please try again.', code: 'NETWORK_ERROR' });
     }
   }
 );
@@ -68,16 +74,11 @@ export const signUp = createAsyncThunk(
 
 export const logout = createAsyncThunk(
   'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await authService.logout();
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_type');
-      localStorage.removeItem('user_data');
-      return null;
-    } catch (error) {
-      return rejectWithValue('Failed to logout');
-    }
+  async () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_type');
+    localStorage.removeItem('user_data');
+    return null;
   }
 );
 
@@ -129,7 +130,8 @@ const authSlice = createSlice({
       })
       .addCase(signIn.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message || 'Authentication failed';
+        state.isAuthenticated = false;
       })
       .addCase(signUp.pending, (state) => {
         state.isLoading = true;

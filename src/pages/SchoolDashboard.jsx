@@ -76,7 +76,7 @@ const SchoolDashboard = () => {
                       <div className="col-6">
                         <div className="stat-box bg-transparent p-3 rounded">
                           <h3>{schoolData.jobs.length}</h3>
-                          <p className="mb-0">Jobs</p>
+                          <p className="mb-0">Projects</p>
                         </div>
                       </div>
                     </div>
@@ -110,7 +110,7 @@ const SchoolDashboard = () => {
               className={`nav-link ${activeTab === 'jobs' ? 'active' : ''}`}
               onClick={() => setActiveTab('jobs')}
             >
-              Jobs
+              Projects
             </button>
           </li>
           <li className="nav-item">

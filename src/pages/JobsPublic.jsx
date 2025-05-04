@@ -52,7 +52,7 @@ const JobsPublic = () => {
             <input 
               type="text" 
               className="form-control" 
-              placeholder="Search jobs..." 
+              placeholder="Search projects..." 
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -80,9 +80,9 @@ const JobsPublic = () => {
       ) : (
         <div className="card">
           <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">Available Jobs</h5>
+            <h5 className="mb-0">Available Projects</h5>
             <span className="badge bg-light text-dark">
-              {filteredJobs.length} of {count} jobs
+              {filteredJobs.length} of {count} projects
             </span>
           </div>
           <div className="card-body p-0">

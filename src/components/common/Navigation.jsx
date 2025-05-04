@@ -14,7 +14,13 @@ const Navigation = () => {
   };
 
   const getDashboardLink = () => {
-    if (!isAuthenticated) return '/signin';
+    const currentPath = window.location.pathname;
+    const publicRoutes = ['/signin', '/signup', '/', '/about', '/contact'];
+    
+    if (!isAuthenticated) {
+      return publicRoutes.includes(currentPath) ? currentPath : '/signin';
+    }
+    
     return userType === 'school' ? '/school/dashboard' : '/company/dashboard';
   };
   

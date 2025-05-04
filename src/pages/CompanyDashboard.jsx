@@ -48,9 +48,9 @@ const CompanyDashboard = () => {
             if (appResult.success) {
               setCompanyData(prev => ({
                 ...prev,
-                applications: appResult.data.map(app => ({
+                applications: appResult.data.data.map(app => ({
                   id: app.id,
-                  student: app.studentName || 'Student',
+                  student: app.User.name || 'Student',
                   position: app.jobTitle || 'Position',
                   status: app.status || 'Pending'
                 })).slice(0, 5)
@@ -104,7 +104,7 @@ const CompanyDashboard = () => {
                     <p className="card-text">
                       <strong>Name:</strong> {companyData.name}<br />
                       <strong>Email:</strong> {companyData.email}<br />
-                      <strong>Total Jobs:</strong> {opportunities.length}
+                      <strong>Total Projects:</strong> {opportunities.length}
                     </p>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ const CompanyDashboard = () => {
               <div className="col-md-6 mb-4">
                 <div className="card">
                   <div className="card-header">
-                    Active Opportunities
+                    Active Projects
                   </div>
                   <div className="card-body">
                     {opportunities.length > 0 ? (
@@ -213,7 +213,7 @@ const CompanyDashboard = () => {
               className={`nav-link ${activeTab === 'jobs' ? 'active' : ''}`}
               onClick={() => setActiveTab('jobs')}
             >
-              Jobs
+              Projects
             </button>
           </li>
           <li className="nav-item">

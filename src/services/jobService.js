@@ -61,5 +61,10 @@ export const jobService = {
       console.error('Error fetching job:', error);
       throw error;
     }
+  },
+
+  apply: async (jobId, data) => {
+    const response = await api.post(`/jobs/${jobId}/apply`, data);
+    return response.data;
   }
 };

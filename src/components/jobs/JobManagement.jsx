@@ -44,7 +44,7 @@ const JobManagement = () => {
   return (
     <div className="job-management">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Job Management</h2>
+        <h2>Project Management</h2>
         {currentView === 'list' && (
           <div className="d-flex gap-2">
             {isCompanyAdmin && (
@@ -52,7 +52,7 @@ const JobManagement = () => {
                 className="btn btn-primary" 
                 onClick={() => setCurrentView('create')}
               >
-                Create New Job
+                Create New Project
               </button>
             )}
             {isSchoolAdmin && (

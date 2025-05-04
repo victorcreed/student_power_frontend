@@ -24,7 +24,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response || error);
+    const errorResponse = error.response;
+    if (errorResponse && errorResponse.status === 401) {
+      if (errorResponse.config.url !== API_ENDPOINTS.AUTH.LOGIN) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_type');
+        localStorage.removeItem('user_data');
+      }
+    }
     return Promise.reject(error);
   }
 );
@@ -67,6 +74,7 @@ export const authService = {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user_type');
             localStorage.removeItem('user_data');
+            debugger
             window.location.href = '/signin';
           }
         }

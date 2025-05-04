@@ -1,57 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Button from '../components/common/Button';
 import withLayout from '../hoc/withLayout';
-import { signIn, clearError } from '../store/slices/authSlice';
+import withFormHandling from '../hoc/withFormHandling';
+import { clearError, verifyUser } from '../store/slices/authSlice';
 import AlertMessage from '../components/common/AlertMessage';
+import { authService } from '../services/api';
 
-const SignIn = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  
+const SignIn = ({ formData, handleChange }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, error, isAuthenticated, userType } = useSelector(state => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ type: '', message: '' });
 
   useEffect(() => {
     dispatch(clearError());
+    return () => dispatch(clearError());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (error) {
-      setAlert({
-        type: 'danger',
-        message: Array.isArray(error) ? error[0] : error
-      });
-    } else if (isAuthenticated) {
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAlert({ type: '', message: '' });
+    setIsLoading(true);
+    
+    try {
+      const response = await authService.signIn(formData);
+      
+      let userType = null;
+      if (response.data.data?.user?.role === 'school_admin') {
+        userType = 'school';
+      } else if (response.data.data?.user?.role === 'company_admin') {
+        userType = 'company';
+      } else if (response.data.data?.school) {
+        userType = 'school';
+      } else if (response.data.data?.company) {
+        userType = 'company';
+      } else {
+        userType = 'school';
+      }
+      
       setAlert({
         type: 'success',
         message: 'Login successful! Redirecting...'
       });
       
-      setTimeout(() => {
-        if (userType === 'school') {
-          navigate('/school/dashboard', { replace: true });
-        } else {
-          navigate('/company/dashboard', { replace: true });
-        }
-      }, 500);
+      localStorage.setItem('auth_token', response.data.token);
+      localStorage.setItem('user_type', userType);
+      localStorage.setItem('user_data', JSON.stringify(response.data.data));
+      
+      const verifyResult = await dispatch(verifyUser()).unwrap();
+      if (verifyResult) {
+        const redirectPath = userType === 'school' ? '/school/dashboard' : '/company/dashboard';
+        navigate(redirectPath, { replace: true });
+      }
+      
+    } catch (error) {
+      const errorData = error.response?.data;
+      const errorMessage = errorData?.error || errorData?.message || 'Authentication failed';
+      
+      setAlert({
+        type: 'danger',
+        message: errorMessage
+      });
+      
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_type');
+      localStorage.removeItem('user_data');
+    } finally {
+      setIsLoading(false);
     }
-  }, [error, isAuthenticated, userType, navigate]);
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setAlert({ type: '', message: '' });
-    dispatch(signIn(formData));
   };
   
   return (
@@ -113,4 +131,6 @@ const SignIn = () => {
   );
 };
 
-export default withLayout(SignIn);
+export default withLayout(
+  withFormHandling({ email: '', password: '' })(SignIn)
+);

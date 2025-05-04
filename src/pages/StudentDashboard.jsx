@@ -72,7 +72,7 @@ const StudentDashboard = () => {
         schoolId: userData.school.id
       });
       
-      setJobs(response.data.jobs || []);
+      setJobs(response.data || []);
       setPagination({
         currentPage: response.data.pagination?.currentPage || 1,
         totalPages: response.data.pagination?.totalPages || 1,
@@ -100,7 +100,7 @@ const StudentDashboard = () => {
     try {
       setIsApplying(true);
       setSelectedJob(jobId);
-      await jobService.applyToJob(jobId, {});
+      await jobService.apply(jobId, {}); // Changed from applyToJob to apply
       setApplicationSuccess(true);
       
       setJobs(jobs.map(job => 
@@ -160,12 +160,11 @@ const StudentDashboard = () => {
       setJobsLoading(true);
       setJobsError(null);
       
-      const response = await jobService.getStudentApplications(page, 10);
-      
-      if (response.data.applications) {
+      const response = await jobService.getApplications();
+      if (response.data.data.applications) {
         setStudentData(prev => ({
           ...prev,
-          applications: response.data.applications
+          applications: response.data.data.applications
         }));
       }
       
@@ -280,7 +279,7 @@ const StudentDashboard = () => {
                       {studentData.applications.map(application => (
                         <tr key={application.id}>
                           <td>{application.job?.title || 'Unknown Job'}</td>
-                          <td>{application.job?.company?.name || 'Unknown'}</td>
+                          <td>{application.job?.company || 'Unknown'}</td>
                           <td>{new Date(application.createdAt).toLocaleDateString()}</td>
                           <td>
                             <span className={`badge ${

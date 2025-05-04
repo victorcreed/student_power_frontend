@@ -85,7 +85,7 @@ const JobForm = ({ jobId, onSuccess }) => {
         onSuccess(response.data.job);
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.error || 'Failed to save job. Please try again.';
+      const errorMessage = err.response?.data?.error || 'Failed to save project. Please try again.';
       setError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -93,20 +93,20 @@ const JobForm = ({ jobId, onSuccess }) => {
   };
   
   if (isLoading) {
-    return <div className="text-center py-4">Loading job details...</div>;
+    return <div className="text-center py-4">Loading project details...</div>;
   }
   
   return (
     <div className="job-form card">
       <div className="card-body">
-        <h3 className="card-title">{jobId ? 'Edit Job' : 'Create New Job'}</h3>
+        <h3 className="card-title">{jobId ? 'Edit Project' : 'Create New Projects'}</h3>
         
         {error && <div className="alert alert-danger">{error}</div>}
         {successMessage && <div className="alert alert-success">{successMessage}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="title" className="form-label">Job Title</label>
+            <label htmlFor="title" className="form-label">Title</label>
             <input
               type="text"
               className="form-control"
@@ -252,7 +252,7 @@ const JobForm = ({ jobId, onSuccess }) => {
             >
               {isSubmitting 
                 ? (jobId ? 'Updating...' : 'Creating...') 
-                : (jobId ? 'Update Job' : 'Create Job')}
+                : (jobId ? 'Update Project' : 'Create Project')}
             </Button>
           </div>
         </form>

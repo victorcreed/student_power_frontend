@@ -141,7 +141,7 @@ const Welcome = () => {
             <div className="text-white p-2 rounded d-flex justify-content-between align-items-center" 
               style={{ backgroundColor: '#3b53e4'}}
             >
-              <p className="mb-0 fs-4">Available Job Opportunities</p>
+              <p className="mb-0 fs-4">Available Projects Opportunities</p>
               <Link to="/jobs/public" className="btn btn-light btn-sm">View All</Link>
             </div>
             <div className="card-body">

@@ -65,7 +65,7 @@ const SchoolJobManagement = () => {
   return (
     <div className="job-management">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Job Management</h2>
+        <h2>Project Management</h2>
       </div>
       
       {isLoading ? (
