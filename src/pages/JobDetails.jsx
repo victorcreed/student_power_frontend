@@ -115,7 +115,7 @@ const JobDetailsDisplay = ({ job, loading, error, onApply, isAuthenticated, user
           </div>
           
           <h5>Project Description</h5>
-          <div className="job-description mb-4" dangerouslySetInnerHTML={{ __html: job.description }}></div>
+          <div className="job-description mb-4 text-start" dangerouslySetInnerHTML={{ __html: job.description }}></div>
           
           <div className="d-flex justify-content-between mt-4">
             <Link to="/jobs/public" className="btn btn-outline-secondary">
