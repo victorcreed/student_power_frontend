@@ -32,7 +32,7 @@ const Navigation = () => {
         <Link className="text-decoration-none" to="/">
           <h1 className="display-4 fw-bold m-0">
           <span style={{ color: ' #3b53e4' }}>Student </span>
-          <span style={{ color: 'rgb(128, 0, 255)' }}>Power</span>
+          <span style={{ color: ' #3b53e4' }}>Power</span>
           </h1>
         </Link>
         
